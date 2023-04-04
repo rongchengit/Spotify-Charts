@@ -1,0 +1,20 @@
+.svg svg rect {
+    fill: orange;
+}
+
+.svg svg text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    fill: white;
+    font: 10px sans-serif;
+    text-anchor: end;
+}
+
+g {
+    cursor: move;
+}
+
+g circle {
+    fill: #1DB954;
+}
