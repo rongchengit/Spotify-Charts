@@ -31,7 +31,7 @@ async function generateCodeChallenge(codeVerifier: string) {
 export async function authorizeLogin() {
   
   if(localStorage.getItem('code') && localStorage.getItem('code-verifier')){ //if both code and code-verifier are in the authorize login then return that means the person just left the computer on
-    const tokenSet = JSON.parse(localStorage.getItem('tokenSet') as any)
+    const tokenSet = getTokenSet()
 
     if(tokenSet?.refresh_token && tokenSet.expires_at < Date.now() + 60000) { //if we have a refresh token and if its about to expire then refresh the token
       await refreshAccessToken()
@@ -141,7 +141,7 @@ async function refreshAccessToken( ) {
 }
 //everytime we need a access token we just call this function
 export async function getAccessToken( ) {
-  const tokenSet = JSON.parse(localStorage.getItem('tokenSet') as any)
+  const tokenSet = getTokenSet()
 
   if (!tokenSet){ //if token is not found then login 
     if(!localStorage.getItem('code')?.length){ //look for the length of the code and it will always be zero instead of null
@@ -156,3 +156,22 @@ export async function getAccessToken( ) {
   //@ts-ignore
   return JSON.parse(localStorage.getItem('tokenSet')).access_token
 }
+
+export function isLoggedIn(): boolean{
+  const tokenSet = getTokenSet()
+
+  if(tokenSet && tokenSet.refresh_token) { //if there is a tokenSett and refresh token return true
+    return true;
+  } 
+  else {
+    return false;
+  }
+}
+
+function getTokenSet() {
+  return JSON.parse(localStorage.getItem('tokenSet') as any); //tokenSet
+}
+  //this will return true or false if the user is logged in or not by checking local storage
+  //the local storage needs to contain refresh token if he does  then return true else return false
+  //in home.tsx go to conditional and if the user is logged add html element p for P<HTML ELEMENT> put the user name in it and its called get profile
+  // if not do the login button

@@ -1,5 +1,5 @@
 import { arrayBuffer } from "stream/consumers";
-import { getAccessToken } from "./spotifyLogin";
+import { getAccessToken, isLoggedIn } from "./spotifyLogin";
 
 interface Playlist{ 
     tracks: Tracks//because its a object we have to create a interface for it
@@ -123,7 +123,7 @@ function splitArrayIntoBatches(arr: string[], batchSize: number) {
     return result;
   }
 
-async function getProfile() {
+export async function getProfile() {
     const response = await fetch('https://api.spotify.com/v1/me', {
       headers: {
         Authorization: 'Bearer ' + getAccessToken()
@@ -131,16 +131,11 @@ async function getProfile() {
     });
   
     const data = await response.json();
-    //return data
-} //to do list
+    if(isLoggedIn()) { //if we're logged in then go to profile
+      return data;
+    }
+}
+ //return data
 //134 where the button is, check if the user is logged in or not 
 //can be checked by getPRofile()
 //console response to put that info into p element
-
-function isLoggedIn(): boolean {
-  return false;
-  //this will return true or false if the user is logged in or not by checking local storage
-  //the local storage needs to contain refresh token if he does  then return true else return false
-  //in home.tsx go to conditional and if the user is logged add html element p for P<HTML ELEMENT> put the user name in it and its called get profile
-  // if not do the login button
-}

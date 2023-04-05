@@ -44,7 +44,7 @@ function Home() {
     }
   }
 
-  //everytime we call getAccessToken we will get the access token = login
+  //everytime we call authorizeLogin we will get the access token = login
   //
 return (
     <div >
