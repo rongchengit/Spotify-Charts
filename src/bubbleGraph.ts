@@ -19,7 +19,6 @@ function normalizeRadius(value: number, minValue: number, maxValue: number, minR
 }
 
 
-
 export default function buildGraph(data:TrackData[]){
 const max = data.reduce((max: number, value: any) => max > value.count ? max : value.count, 1)
 const min = data.reduce((min: number, value: any) => min < value.count ? min : value.count, max)

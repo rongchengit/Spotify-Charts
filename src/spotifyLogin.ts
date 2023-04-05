@@ -28,6 +28,10 @@ async function generateCodeChallenge(codeVerifier: string) {
   return base64encode(digest);
 }
 
+function getTokenSet() {
+  return JSON.parse(localStorage.getItem('tokenSet') as any); //tokenSet
+}
+
 export async function authorizeLogin() {
   
   if(localStorage.getItem('code') && localStorage.getItem('code-verifier')){ //if both code and code-verifier are in the authorize login then return that means the person just left the computer on
@@ -154,22 +158,18 @@ export async function getAccessToken( ) {
     await refreshAccessToken()
   }
   //@ts-ignore
-  return JSON.parse(localStorage.getItem('tokenSet')).access_token
+  return getTokenSet().access_token
 }
 
 export function isLoggedIn(): boolean{
   const tokenSet = getTokenSet()
 
-  if(tokenSet && tokenSet.refresh_token) { //if there is a tokenSett and refresh token return true
-    return true;
-  } 
-  else {
-    return false;
-  }
+  return tokenSet && tokenSet.refresh_token
+  
 }
 
-function getTokenSet() {
-  return JSON.parse(localStorage.getItem('tokenSet') as any); //tokenSet
+function getToken() {
+
 }
   //this will return true or false if the user is logged in or not by checking local storage
   //the local storage needs to contain refresh token if he does  then return true else return false
