@@ -165,13 +165,36 @@ export function isLoggedIn(): boolean{
   const tokenSet = getTokenSet()
 
   return tokenSet && tokenSet.refresh_token
+}
+
+export async function fetchProfile() {
+  if(isLoggedIn()) {
+    const response = await fetch('https://api.spotify.com/v1/me', {
+      headers: {
+        Authorization: 'Bearer ' + await getAccessToken()
+      }
+    });
   
+    const data = await response.json();
+    return data
+  }
 }
 
 function getToken() {
 
 }
-  //this will return true or false if the user is logged in or not by checking local storage
-  //the local storage needs to contain refresh token if he does  then return true else return false
+
+export async function checkLogin<T extends (...args: any[]) => any>(func: T): Promise<ReturnType<T> | undefined>{
+  if(isLoggedIn()){
+    return await func()
+  }
+  await authorizeLogin()
+} 
+
+
+
+
+
+
   //in home.tsx go to conditional and if the user is logged add html element p for P<HTML ELEMENT> put the user name in it and its called get profile
   // if not do the login button

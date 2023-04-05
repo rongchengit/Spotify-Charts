@@ -1,5 +1,5 @@
 import { arrayBuffer } from "stream/consumers";
-import { getAccessToken, isLoggedIn } from "./spotifyLogin";
+import { getAccessToken} from "./spotifyLogin";
 
 interface Playlist{ 
     tracks: Tracks//because its a object we have to create a interface for it
@@ -111,7 +111,6 @@ export async function fetchArtists(artistIDs: string[]): Promise<ArtistGenre[]>{
     return artists;
 }
 
-
 function splitArrayIntoBatches(arr: string[], batchSize: number) {
     const result = [];
     const length = arr.length;
@@ -123,19 +122,5 @@ function splitArrayIntoBatches(arr: string[], batchSize: number) {
     return result;
   }
 
-export async function getProfile() {
-    const response = await fetch('https://api.spotify.com/v1/me', {
-      headers: {
-        Authorization: 'Bearer ' + getAccessToken()
-      }
-    });
-  
-    const data = await response.json();
-    if(isLoggedIn()) { //if we're logged in then go to profile
-      return data;
-    }
-}
- //return data
-//134 where the button is, check if the user is logged in or not 
 //can be checked by getPRofile()
 //console response to put that info into p element
