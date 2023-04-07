@@ -19,7 +19,7 @@ function normalizeRadius(value: number, minValue: number, maxValue: number, minR
 }
 
 
-export default function buildGraph(data:TrackData[]){
+export default function buildGraph(data:TrackData[], backgroundImageURL: string){
 const max = data.reduce((max: number, value: any) => max > value.count ? max : value.count, 1)
 const min = data.reduce((min: number, value: any) => min < value.count ? min : value.count, max)
 d3.select("#bubbleChart").select("svg").remove(); //ensure it doesnt redraw graph, it is used to get rid of second graph
@@ -32,6 +32,7 @@ const svg = d3.select("#bubbleChart")
   .attr("width", width)
   .attr("height", height)
 
+  
 svg.append("defs")
   .selectAll("pattern")
   .data(data)
@@ -81,6 +82,14 @@ const tooltip = d3.select("#bubbleChart")
   .style("border-radius", "5px")
   .style("padding", "10px")
   .style("color", "#1DB954");
+
+//for background
+svg.insert("image", ":first-child")
+  .attr("href", backgroundImageURL)
+  .attr("width", width)
+  .attr("height", height)
+  .attr("preserveAspectRatio","xMidYMid slice")
+  .style("opacity",0.5)
   
 
 // Features of the forces applied to the nodes:

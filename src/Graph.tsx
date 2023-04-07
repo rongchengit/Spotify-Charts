@@ -8,6 +8,7 @@ import buildGraph from "./bubbleGraph"; //importing everything from bubbleGraph
 
 interface IProps{
   playlistID:string;
+  imageURL:string | undefined; //from Home.tsx html
 
 }
 interface IState{
@@ -67,7 +68,7 @@ export default class Graph extends react.Component<IProps, IState>{
                     }
                   }) 
                 })
-                buildGraph(data.sort((a,b) => a.count > b.count ? -1 : 1).slice(0, 100)) //slice is viewign top 50
+                buildGraph(data.sort((a,b) => a.count > b.count ? -1 : 1).slice(0, 100), this.props.imageURL! ) //slice is viewign top 50
             })
           }
           else{

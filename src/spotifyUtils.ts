@@ -1,5 +1,4 @@
-import { arrayBuffer } from "stream/consumers";
-import { getAccessToken} from "./spotifyLogin";
+import { getAccessToken } from "./spotifyLogin";
 
 interface Playlist{ 
     tracks: Tracks//because its a object we have to create a interface for it
@@ -36,31 +35,14 @@ interface Img{
 export interface PlaylistItem{ //object with type string for both id and name
     id: string;
     name: string;
+    images: Img[];
     // add any other properties you need from the playlist object
-}
-
-
-export async function fetchToken(): Promise<string>{ //async function that returns a string which is the access token
-
-    const tokenResponse = await fetch("https://accounts.spotify.com/api/token", { //get token from spotify API
-    method: "POST", //make a post request  to the spotify API
-    body: "grant_type=client_credentials", //use the grant type client credentials
-    headers: { //the headers we need to provide content, accept, and authorization
-      "Content-Type": "application/x-www-form-urlencoded", 
-      "Accept": "application/json", //only acepts json
-      "Authorization": "Basic OThkN2Q3MjQ3YjhlNGNiM2ExYzdmNjI1N2VlMWZhNjE6YWI5NmY2ZjhmYjkxNDFlZGFlMzc0MDg2NDU5ZTMwNDc=" //adding client id and secret as base64 encoded 
-    }
-  });
-
-  const tokenData = await tokenResponse.json(); // from line 14 get the response and put it in a json object
-  return tokenData.access_token; //Now have access from the token data 
-  
 }
 
 export async function fetchUserPlaylists(user_id: string): Promise<PlaylistItem[]>{ //any synchronous function you can use await //its so I dont have to chain //paramenters with user_id//return array of playlist items
 
   const url = `https://api.spotify.com/v1/users/${user_id}/playlists`; //create the url
-  const playlistResponse = await fetch(url, {headers: {'Authorization': 'Bearer ' + await fetchToken(), "Content-Type": "application/json","Accept": "application/json"}});//get the url and play using bearer token
+  const playlistResponse = await fetch(url, {headers: {'Authorization': 'Bearer ' + await getAccessToken(), "Content-Type": "application/json","Accept": "application/json"}});//get the url and play using bearer token
   const playlistdata = await playlistResponse.json();
   return playlistdata.items;//grabs the playlist data
 }
@@ -69,7 +51,7 @@ export async function fetchUserPlaylists(user_id: string): Promise<PlaylistItem[
 export async function fetchPlaylistById(playlist_id: string): Promise<TrackItem[]>{ 
 
   const url = `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`; //create the url
-  const token = await fetchToken();
+  const token = await getAccessToken();
   const playlistResponse = await fetch(url, {headers: {'Authorization': 'Bearer ' + token, "Content-Type": "application/json","Accept": "application/json"}});//get the url and play using bearer token
   const playlists = await playlistResponse.json(); //gives all the info about the playlist
   let trackResult = playlists.items; //creates an array with first limit tracks
@@ -99,8 +81,7 @@ export async function fetchArtists(artistIDs: string[]): Promise<ArtistGenre[]>{
     for (let i = 0; i < batchedArtistIDs.length; i++){
         urls.push(`https://api.spotify.com/v1/artists?ids=${batchedArtistIDs[i].join()}`);//push list of artist ids from 0-49 and appended together into the url array. basically making urls
     }
-    //let artistPromise = ((await fetch(url, {headers: {'Authorization': 'Bearer ' + await fetchToken(), "Content-Type": "application/json","Accept": "application/json"}})).json().artists);//get the json and get the artist   
-    const access_token = await fetchToken();
+    const access_token = await getAccessToken();
     const artistResponse = await Promise.all(urls.map(url => fetch(url, {headers: {'Authorization': 'Bearer ' + access_token, "Content-Type": "application/json","Accept": "application/json"}}))) //fetching multiple times for the promise all response
     
     let artists = [];

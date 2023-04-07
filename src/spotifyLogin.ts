@@ -1,5 +1,3 @@
-import { verify } from "crypto";
-
 //generate random string for authorization token
 function generateRandomString(length: number) {
     let text = '';
@@ -143,12 +141,36 @@ async function refreshAccessToken( ) {
   localStorage.setItem('tokenSet', JSON.stringify({ ... tokenInfo, expires_at }))
 
 }
+
+async function fetchToken() { //async function that returns a string which is the access token
+
+  const tokenResponse = await fetch("https://accounts.spotify.com/api/token", { //get token from spotify API
+  method: "POST", //make a post request  to the spotify API
+  body: "grant_type=client_credentials", //use the grant type client credentials
+  headers: { //the headers we need to provide content, accept, and authorization
+    "Content-Type": "application/x-www-form-urlencoded", 
+    "Accept": "application/json", //only acepts json
+    "Authorization": "Basic OThkN2Q3MjQ3YjhlNGNiM2ExYzdmNjI1N2VlMWZhNjE6YWI5NmY2ZjhmYjkxNDFlZGFlMzc0MDg2NDU5ZTMwNDc=" //adding client id and secret as base64 encoded 
+  }
+});
+
+const tokenData = await tokenResponse.json(); // from line 14 get the response and put it in a json object
+localStorage.setItem('tokenSet', JSON.stringify({ access_token: tokenData.access_token, expires_at: Date.now() + 3600000})) // have access token and expires in 3600000 which is 1 hour
+
+}
+
 //everytime we need a access token we just call this function
+//if login use user token
+//and if its not logged in use system token
 export async function getAccessToken( ) {
   const tokenSet = getTokenSet()
 
-  if (!tokenSet){ //if token is not found then login 
-    if(!localStorage.getItem('code')?.length){ //look for the length of the code and it will always be zero instead of null
+  if (!tokenSet || (!tokenSet.refresh_token && localStorage.getItem('code-verifier'))){ //if token is not found then login 
+    if(!localStorage.getItem("code-verifier")){ //if not logged in, get system token
+      await fetchToken()
+      return getTokenSet().access_token
+    }
+    else if(!localStorage.getItem('code')?.length){ //look for the length of the code and it will always be zero instead of null
       //@ts-ignore
       localStorage.setItem('code',new URLSearchParams(window.location.search).get('code'))
     }
