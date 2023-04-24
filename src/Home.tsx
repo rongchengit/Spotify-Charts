@@ -2,7 +2,7 @@ import React, {useEffect, useState } from 'react'; //{} only grabs useEffect and
 import Graph from './Graph'; // ./ because its local file 
 import './App.css';
 import {fetchUserPlaylists} from './spotifyUtils';
-import {authorizeLogin,fetchProfile,getAccessToken,login, logout} from './spotifyLogin'
+import {authorizeLogin,fetchProfile, logout} from './spotifyLogin'
 import Select, { ActionMeta, SingleValue } from 'react-select'; //importing the select drop down 
 import { customStyles } from './dropdown';
 import backgroundImage from '/download.png';
@@ -35,7 +35,7 @@ function Home() {
       const options: OptionType[] = playlists.map(playlist => ({ //grabs the id of the playlist and name, and album image
         value: playlist.id, 
         label: playlist.name,
-        albumImg: playlist.images[0].url //mapped to the image url which is a array
+        albumImg: playlist.images[0]?.url ?? "./public/squid.png" //mapped to the image url which is a array
       }));
       setPlaylists(options);
       setSelectedOption(options[0])//makes it default to the 1st playlist
@@ -91,7 +91,7 @@ return (
         <Select<OptionType>
           styles = {customStyles}
           options={playlists}
-          value ={selectedOption}
+          value ={selectedOption} 
           onChange={handlePlaylistClick}
           placeholder="Spotify Playlist"
         />
