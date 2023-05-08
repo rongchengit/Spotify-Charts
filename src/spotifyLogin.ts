@@ -25,11 +25,15 @@ async function generateCodeChallenge(codeVerifier: string) {
 
   return base64encode(digest);
 }
-
-function getTokenSet() {
+//the format 
+export function getTokenSet() {
   return JSON.parse(localStorage.getItem('tokenSet') as any); //tokenSet
 }
-
+function appendUserIdToTokenSet(user_id: string) {
+  const newTokenSet = getTokenSet();
+  newTokenSet.user_id = user_id;
+  localStorage.setItem('tokenSet', JSON.stringify(newTokenSet));
+}
 export async function authorizeLogin() {
   
   if(localStorage.getItem('code') && localStorage.getItem('code-verifier')){ //if both code and code-verifier are in the authorize login then return that means the person just left the computer on
@@ -48,12 +52,12 @@ export async function authorizeLogin() {
 
     generateCodeChallenge(codeVerifier).then(codeChallenge => {
       let state = generateRandomString(16);
-      let scope = 'user-read-private user-read-email';
-
+      let scope = 'playlist-read-private user-library-read'; //scope for the endpoints to the private data
+      
       let args = new URLSearchParams({
         response_type: 'code',
         client_id: clientId,
-        // scope: scope,
+        scope: scope, //using the scope it gives us access to private playlist
         redirect_uri: redirectUri,
         state: state,
         code_challenge_method: 'S256',
@@ -162,19 +166,22 @@ localStorage.setItem('tokenSet', JSON.stringify({ access_token: tokenData.access
 //everytime we need a access token we just call this function
 //if login use user token
 //and if its not logged in use system token
+//it will get it from local storage or from spotify
 export async function getAccessToken( ) {
   const tokenSet = getTokenSet()
 
   if (!tokenSet || (!tokenSet.refresh_token && localStorage.getItem('code-verifier'))){ //if token is not found then login 
-    if(!localStorage.getItem("code-verifier")){ //if not logged in, get system token
-      await fetchToken()
-      return getTokenSet().access_token
-    }
-    else if(!localStorage.getItem('code')?.length){ //look for the length of the code and it will always be zero instead of null
+    if(!localStorage.getItem('code')?.length && window.location.search.length){ //look for the length of the code and it will always be zero instead of null
       //@ts-ignore
       localStorage.setItem('code',new URLSearchParams(window.location.search).get('code'))
     }
-    await login();
+    if(!localStorage.getItem("code-verifier") || !localStorage.getItem('code')?.length){ //if not logged in, get system token, or if he doesnt have a code then use a token
+      await fetchToken()
+      return getTokenSet().access_token
+    }
+    else{
+      await login();
+    }
   }
   else if (tokenSet.refresh_token && tokenSet.expires_at < Date.now() + 60000){ //if we have a refresh token and if its about to expire then refresh the token
     await refreshAccessToken()
@@ -198,6 +205,7 @@ export async function fetchProfile() {
     });
   
     const data = await response.json();
+    appendUserIdToTokenSet(data.id);
     return data
   }
 }

@@ -1,4 +1,4 @@
-import { getAccessToken } from "./spotifyLogin";
+import { getAccessToken, getTokenSet, isLoggedIn } from "./spotifyLogin";
 
 interface Playlist{ 
     tracks: Tracks//because its a object we have to create a interface for it
@@ -40,7 +40,7 @@ export interface PlaylistItem{ //object with type string for both id and name
 }
 
 export async function fetchUserPlaylists(user_id: string): Promise<PlaylistItem[]>{ //any synchronous function you can use await //its so I dont have to chain //paramenters with user_id//return array of playlist items
-
+  
   const url = `https://api.spotify.com/v1/users/${user_id}/playlists`; //create the url
   const playlistResponse = await fetch(url, {headers: {'Authorization': 'Bearer ' + await getAccessToken(), "Content-Type": "application/json","Accept": "application/json"}});//get the url and play using bearer token
   const playlistdata = await playlistResponse.json();
