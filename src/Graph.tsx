@@ -12,24 +12,26 @@ interface IProps{
 
 }
 interface IState{
-  
+  data: TrackData[]
 }
 
 export interface TrackData{ //adding a ?: makes it optional
   name: string;
   count: number;
   image: string;
-  genre?: string; 
+  genres?: string[]; 
   popularity?: number;
 
 }
-
 //create bubble graph 
 export default class Graph extends react.Component<IProps, IState>{
   constructor(props: IProps) {
     super(props);  
+    this.state = {
+      data: []
+    }
   }
-
+  
   //Component is UseEffect which is the backend request to the spotify api
   componentDidMount() {
     if(this.props.playlistID){ //grabs playlistid from props
@@ -41,7 +43,8 @@ export default class Graph extends react.Component<IProps, IState>{
             genres: [] as string[],
             // artistIDs: item.track.artists.map(artist => artist.id)
             artistNames: item.track.artists.map(artist => artist.name), //grabs artist names from the artist map
-            artistIds: item.track.artists.map(artist => artist.id)// grabs artist ids from the artist map
+            artistIds: item.track.artists.map(artist => artist.id),// grabs artist ids from the artist map
+            artistPopularity: -1
           }))//grab the ID and Arist , and genre
 
           const artistIDs = trackInfo.flatMap(track => track.artistIds) 
@@ -50,7 +53,10 @@ export default class Graph extends react.Component<IProps, IState>{
             fetchArtists(uniqueArtistIDs).then(artists => {
                 artists.forEach(artist => {
                     trackInfo.filter(track => track.artistIds.includes(artist.id)) //get all artist and loop through and look through track info and give me all the track from that artist
-                        .forEach(track => track.genres.push(...artist.genres)) //pushes the genre[] elements into trackInfo genres:[] as string []
+                        .forEach(track => {
+                          track.genres.push(...artist.genres)
+                          track.artistPopularity = artist.popularity
+                        }) //pushes the genre[] elements into trackInfo genres:[] as string []
                 })
                 trackInfo.forEach((track) => { //loop through all the trackInfo
                   track.artistNames.forEach(artistName =>{ //for each track grab the artist name
@@ -64,11 +70,12 @@ export default class Graph extends react.Component<IProps, IState>{
                       if(images?.length){ //if we find the artist we get the images
                         image = images[0].url // if there are images take the image
                       }
-                      data.push({name: artistName, count: 1, image}) //if not in the data array then add the artist into the data: TrackData[] and add 1 and same for image
+                      data.push({name: artistName, count: 1, image, genres: track.genres, popularity: track.artistPopularity }) //if not in the data array then add the artist into the data: TrackData[] and add 1 and same for image
                     }
                   }) 
                 })
-                buildGraph(data.sort((a,b) => a.count > b.count ? -1 : 1).slice(0, 100), this.props.imageURL! ) //slice is viewign top 50
+                this.setState({data: data.sort((a,b) => a.count > b.count ? -1 : 1).slice(0, 100)})
+                buildGraph(data.sort((a,b) => a.count > b.count ? -1 : 1).slice(0, 100), this.props.imageURL!, "count" ) //slice is viewign top 50
             })
           }
           else{
@@ -81,7 +88,17 @@ export default class Graph extends react.Component<IProps, IState>{
     //render the svg and graph
   render() {
     return (
-      <div className="center" id="bubbleChart"></div>
+      <div>
+        <div className="center" id="bubbleChart"></div>
+
+        <div>
+          
+          <button onClick={()=> buildGraph(this.state.data, this.props.imageURL!, "count")}>By Count</button>
+
+          <button onClick={()=> buildGraph(this.state.data, this.props.imageURL!, "popularity")}>By Popularity</button>
+
+        </div>
+      </div>
    );
   }
 }

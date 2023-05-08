@@ -11,7 +11,6 @@ function normalizeRadius(value: number, minValue: number, maxValue: number, minR
 
   // Normalize the input value within the range of minValue to maxValue
   const normalizedValue = (value - minValue) / (maxValue - minValue);
-
   // Scale the normalized value to the range of minRadius to maxRadius
   const radius = minRadius + (normalizedValue * (maxRadius - minRadius));
 
@@ -19,18 +18,24 @@ function normalizeRadius(value: number, minValue: number, maxValue: number, minR
 }
 
 
-export default function buildGraph(data:TrackData[], backgroundImageURL: string){
-const max = data.reduce((max: number, value: any) => max > value.count ? max : value.count, 1)
-const min = data.reduce((min: number, value: any) => min < value.count ? min : value.count, max)
+export default function buildGraph(data:TrackData[], backgroundImageURL: string, focus: string){
+
+const totalCount = data.reduce((total, next) => total += next.count, 0)//grabbing the total count for playlist
+let max = data.reduce((max: number, value: any) => max > (focus === "popularity" ? value.popularity : value.count) ? max : (focus === "popularity" ? value.popularity : value.count), 1)
+if(focus === "popularity"){
+  max/= .3 //change max size
+}
+const min = data.reduce((min: number, value: any) => min < (focus === "popularity" ? value.popularity : value.count) ? min : (focus === "popularity" ? value.popularity : value.count), max)
 d3.select("#bubbleChart").select("svg").remove(); //ensure it doesnt redraw graph, it is used to get rid of second graph
-const width = 1000
-const height = 1000
+const width = '1000'
+const height = '1000'
 
 // append the svg object to the body of the page
 const svg = d3.select("#bubbleChart")
   .append("svg")
-  .attr("width", width)
-  .attr("height", height)
+  .attr("width", window.innerWidth < 600 ? 500 : width)
+  .attr("height", window.innerWidth < 600 ? 600 : height)
+  //.attr("viewBox",`0 0 ${width} ${height}`)
 
   
 svg.append("defs")
@@ -47,8 +52,8 @@ svg.append("defs")
   .append("image")
   .attr("x", 0)
   .attr("y", 0)
-  .attr("height", (d: any)=> normalizeRadius(d.count,min,max,25,100)*2)// position for the image
-  .attr("width", (d: any)=> normalizeRadius(d.count,min,max,25,100)*2)
+  .attr("height", (d: any)=> normalizeRadius((focus === "popularity" ? d.popularity : d.count),min,max,window.innerWidth < 600 ? 15 : 25,window.innerWidth < 600 ? 60 : 100)*2)// position for the image
+  .attr("width", (d: any)=> normalizeRadius((focus === "popularity" ? d.popularity : d.count),min,max,window.innerWidth < 600 ? 15 : 25,window.innerWidth < 600 ? 60 : 100)*2)
   .attr("preserveAspectRatio", "none")
   .attr("xlink:href", (d:TrackData) => d.image);
 
@@ -58,9 +63,9 @@ const node = svg.append("g")
   .data(data)
   .enter()
   .append("circle")
-  .attr("r", (d: any)=> normalizeRadius(d.count,min,max,25,100))
-  .attr("cx", width / 2)
-  .attr("cy", height / 2)
+  .attr("r", (d: any)=> normalizeRadius((focus === "popularity" ? d.popularity : d.count),min,max,window.innerWidth < 600 ? 15 : 25,window.innerWidth < 600 ? 60 : 100))
+  .attr("cx", svg.node()!.clientWidth / 2)
+  .attr("cy", svg.node()!.clientHeight / 2)
   .style("fill", (d:TrackData, i: number) => `url(#${i})`)
   .attr("stroke", "#1DB954")
   .style("stroke-width", 4)
@@ -86,18 +91,18 @@ const tooltip = d3.select("#bubbleChart")
 //for background
 svg.insert("image", ":first-child")
   .attr("href", backgroundImageURL)
-  .attr("width", width)
-  .attr("height", height)
+  .attr("width",  svg.node()!.clientWidth)
+  .attr("height", svg.node()!.clientHeight)
   .attr("preserveAspectRatio","xMidYMid slice")
   .style("opacity",0.5)
   
 
 // Features of the forces applied to the nodes:
 const simulation = d3.forceSimulation()
-  .force("center", d3.forceCenter().x(width / 2).y(height / 2)) //set the center of gravity for the center of the gravity
+  .force("center", d3.forceCenter().x( svg.node()!.clientWidth / 2).y(svg.node()!.clientHeight / 2)) //set the center of gravity for the center of the gravity
   .force("charge", d3.forceManyBody().strength(1)) // Nodes are attracted one each other of value is > 0
-  .force("collide", d3.forceCollide().strength(.5).radius((d: any)=> normalizeRadius(d.count,min,max,25,100)).iterations(1)) // Force that avoids circle overlapping
-  .force("attract", d3.forceRadial(0, width / 2, height / 2).strength(0.05))//how strong the attraction it is to the center of the gravityt
+  .force("collide", d3.forceCollide().strength(.5).radius((d: any)=> normalizeRadius((focus === "popularity" ? d.popularity : d.count),min,max,window.innerWidth < 600 ? 15 : 25,window.innerWidth < 600 ? 60 : 100)).iterations(1)) // Force that avoids circle overlapping
+  .force("attract", d3.forceRadial(0,  svg.node()!.clientWidth / 2, svg.node()!.clientHeight / 2).strength(0.05))//how strong the attraction it is to the center of the gravityt
 
 // Apply these forces to the nodes and update their positions.
 // Once the force algorithm is happy with positions ('alpha' value is low enough), simulations will stop.
@@ -129,7 +134,7 @@ function dragended(event, d) {
 }
 
 function onBubbleClick(event: any, d: TrackData) {
-  tooltip.style("opacity", 1).html("artist: "+ d.name + "<br />count: "+ d.count)
+  tooltip.style("opacity", 1).html("artist: "+ d.name + "<br />count: "+ d.count + "<br />percentage: "+ (d.count*100/totalCount).toFixed(2)+ "%" + "<br />genres: "+ d.genres?.join(", ") + "<br />popularity: "+ d.popularity) 
   .style("left",event.pageX + "px") //event.pageX and event.pageY makes it relative position to the page for zooming + mobile
   .style("top",event.pageY + "px");    
 }

@@ -52,7 +52,7 @@ export async function authorizeLogin() {
 
     generateCodeChallenge(codeVerifier).then(codeChallenge => {
       let state = generateRandomString(16);
-      let scope = 'playlist-read-private user-library-read'; //scope for the endpoints to the private data
+      let scope = 'playlist-read-private user-library-read user-follow-read'; //scope for the endpoints to the private data
       
       let args = new URLSearchParams({
         response_type: 'code',
@@ -185,6 +185,11 @@ export async function getAccessToken( ) {
   }
   else if (tokenSet.refresh_token && tokenSet.expires_at < Date.now() + 60000){ //if we have a refresh token and if its about to expire then refresh the token
     await refreshAccessToken()
+  }
+  else if (!tokenSet.refresh_token && tokenSet.expires_at < Date.now() + 60000){ //if we call a function and we dont have refresh token and current token is expired and what we do is give system token
+    logout();
+    await fetchToken()
+    return getTokenSet().access_token 
   }
   //@ts-ignore
   return getTokenSet().access_token
