@@ -1,7 +1,7 @@
 //export is public functions that can be imported in from other files
 // function bubblegraph grabs variable playlistID
 //all the functions i write in spotifyUtils I will call it in graph
-import * as react from "react";
+import * as React from "react";
 import { fetchArtists, fetchPlaylistById } from "./spotifyUtils";
 import './Graph.css'; //importing graph css
 import buildGraph from "./bubbleGraph"; //importing everything from bubbleGraph
@@ -24,7 +24,7 @@ export interface TrackData{ //adding a ?: makes it optional
 
 }
 //create bubble graph 
-export default class Graph extends react.Component<IProps, IState>{
+export default class Graph extends React.Component<IProps, IState>{
   constructor(props: IProps) {
     super(props);  
     this.state = {

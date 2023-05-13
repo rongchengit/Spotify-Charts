@@ -1,0 +1,117 @@
+body {
+  margin: 0;
+  background-color: #191414;
+  font-family: 'Gotham Rounded','Gotham Rounded',-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #1DB954;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #1DB954;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.defaultInput {
+  width: 500px;
+  padding: 5px 5px;
+  font-size: 24px;
+  background-color: #1DB954;
+  border: 3;
+  border-radius: 25px;
+  outline: none;
+  color: #5A5A5A;
+  font-family: 'Gotham Rounded', sans-serif;
+  line-height: 1.5;
+  text-align: center;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+-webkit-text-fill-color: #5A5A5A;
+-webkit-box-shadow: 0 0 0 30px #1DB954 inset !important;
+}
+
+.defaultInput::placeholder {
+  color: #5A5A5A;
+}
+
+.defaultInput:hover {
+  outline: white;
+}
+
+.svg svg rect {
+    fill: orange;
+}
+
+.svg svg text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    fill: white;
+    font: 10px sans-serif;
+    text-anchor: end;
+}
+
+g {
+    cursor: move;
+}
+
+g circle {
+    fill: #1DB954;
+}
+
+
+/*# sourceMappingURL=main.58537cca.css.map*/

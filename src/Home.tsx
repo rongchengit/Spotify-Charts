@@ -33,7 +33,7 @@ function Home() {
       const options: OptionType[] = playlists.map(playlist => ({ //grabs the id of the playlist and name, and album image
         value: playlist.id, 
         label: playlist.name,
-        albumImg: playlist.images[0]?.url ?? "/squid.png" //mapped to the image url which is a array
+        albumImg: playlist.images[0]?.url ?? "http://localhost:8080/squid.png" //mapped to the image url which is a array
       }));
       setPlaylists(options);
       setSelectedOption(options[0])//makes it default to the 1st playlist
