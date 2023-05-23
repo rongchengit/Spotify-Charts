@@ -44,9 +44,10 @@ export async function authorizeLogin() {
     }
     return
   }
+  
   //if not do all these things
-    const clientId = '98d7d7247b8e4cb3a1c7f6257ee1fa61'; //client id non secret decoded
-    const redirectUri = 'http://localhost:3000/callback'; //website name
+    const clientId = '98d7d7247b8e4cb3a1c7f6257ee1fa61' //recreate clientid
+    const redirectUri = `https://bublify.net/callback`; //website name `string` 
 
     let codeVerifier = generateRandomString(128);
 
@@ -76,7 +77,7 @@ export async function login() {
     await createAccessToken({
       grant_type: 'authorization_code',
       code: code,
-      redirect_uri: "http://localhost:3000/callback",
+      redirect_uri: "https://bublify.net/callback",
       code_verifier: code_verifier,
     })
 }

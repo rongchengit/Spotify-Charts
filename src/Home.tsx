@@ -6,7 +6,6 @@ import {authorizeLogin,fetchProfile, logout} from './spotifyLogin'
 import Select, { ActionMeta, SingleValue } from 'react-select'; //importing the select drop down 
 import { customStyles } from './dropdown';
 
-
 interface OptionType{ //this is for drop down interface
   value: string;
   label: string;
@@ -33,7 +32,7 @@ function Home() {
       const options: OptionType[] = playlists.map(playlist => ({ //grabs the id of the playlist and name, and album image
         value: playlist.id, 
         label: playlist.name,
-        albumImg: playlist.images[0]?.url ?? "http://localhost:8080/squid.png" //mapped to the image url which is a array
+        albumImg: playlist.images[0]?.url ?? "" //mapped to the image url which is a array
       }));
       setPlaylists(options);
       setSelectedOption(options[0])//makes it default to the 1st playlist
@@ -74,11 +73,14 @@ function Home() {
   //if the user is logged in then we put his UserName and if not we put the login button
   //and we control the logout() we remove all the Information including the UserName so the if statement is no longer true
 return (
+
     <div>
-        {loggedInUserID ?  (<><button onClick={resetState}>logout</button> <p>
+      <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
+        {loggedInUserID ?  (<div style={{display: 'flex', alignItems: 'center'}}>
+        <button onClick={resetState}>logout</button> <p style= {{ color: '#1DB954' , marginLeft: '10px'}}>
           {loggedInUserID}
-          
-        </p></>):  <button onClick={async()=>{await authorizeLogin()}}>login</button> }
+        </p></div>):  <button onClick={async()=>{await authorizeLogin()}}>login</button> }
+      </div>
 
       <form className = "center" onSubmit = {handleUserIDSubmit}>
         <input 

@@ -37,6 +37,7 @@ provider:
           - ${self:provider.stage}
 
 plugins:
+  - serverless-domain-manager
   - serverless-webpack
   - serverless-plugin-scripts
   - serverless-offline
@@ -55,8 +56,15 @@ functions:
           path: /{any+}
           method: any
           cors: true
-
+          
 custom:
+  customDomain:
+    domainName: bublify.net
+    basePath: ''
+    certificateName: bublify.net
+    createRoute53Record: true
+    autoDomain: true
+
   distBucketUrl:
     us-east-1:
       # us-east-1 uses a different URL format than the other regions

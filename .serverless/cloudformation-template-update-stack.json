@@ -163,7 +163,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/bublify/dev/1683989884174-2023-05-13T14:58:04.174Z/bublify.zip"
+          "S3Key": "serverless/bublify/dev/1684812931402-2023-05-23T03:35:31.402Z/bublify.zip"
         },
         "Handler": "handler.serve",
         "Runtime": "nodejs18.x",
@@ -227,14 +227,14 @@
         "ServeLogGroup"
       ]
     },
-    "ServeLambdaVersionjBKRb74oENNiAV2acH0V0hpvVXbMv5KKOfaMRM3MJWw": {
+    "ServeLambdaVersiontjUdX4VfcOLfsWiBuZfQ3Kpow0zNwqRre5xG03dBFY": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ServeLambdaFunction"
         },
-        "CodeSha256": "ShxAjrTc73GxAYKNM3MmKdmhVdRRoUjdqIrrsh8ZDws="
+        "CodeSha256": "P0H0EOFikFFwtlqgPJhBQWlrK+vmWySmf+ttqwhKGeU="
       }
     },
     "ApiGatewayRestApi": {
@@ -453,7 +453,7 @@
         "ServeLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1683989876454": {
+    "ApiGatewayDeployment1684812922152": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -555,7 +555,7 @@
     "ServeLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ServeLambdaVersionjBKRb74oENNiAV2acH0V0hpvVXbMv5KKOfaMRM3MJWw"
+        "Ref": "ServeLambdaVersiontjUdX4VfcOLfsWiBuZfQ3Kpow0zNwqRre5xG03dBFY"
       },
       "Export": {
         "Name": "sls-bublify-dev-ServeLambdaFunctionQualifiedArn"

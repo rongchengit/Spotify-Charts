@@ -47,17 +47,23 @@
 }
 
 .defaultInput {
-  width: 500px;
-  padding: 5px 5px;
+  box-sizing: border-box;
+  height: 38px;
+  width: 100%;  /* Use percentage width, similar to your dropdown CSS */
+  max-width: 500px;  /* Limit maximum width */
+  padding: 5px;
   font-size: 24px;
   background-color: #1DB954;
-  border: 3;
+  border: 3px solid;  /* You missed defining the border type in your existing CSS. Adjust the border width and type as necessary */
   border-radius: 25px;
-  outline: none;
+  border-color: transparent;
   color: #5A5A5A;
   font-family: 'Gotham Rounded', sans-serif;
+  text-align: center;  /* Center the text within the button */
+  display: block;  /* This will make the button behave as a block element, similar to div */
+  margin: 0 auto;  /* This will center the button on the page, similar to your dropdown CSS */
   line-height: 1.5;
-  text-align: center;
+  outline: none;
 }
 
 input:-webkit-autofill,
@@ -72,6 +78,10 @@ input:-webkit-autofill:active {
   color: #5A5A5A;
 }
 
-.defaultInput:hover {
+/* .defaultInput:hover {
   outline: white;
+} */
+
+.loggedInUserID {
+  color: #1DB954;
 }

@@ -5,11 +5,12 @@ export const customStyles = {
       ...provided,
       color:'#5A5A5A',
       backgroundColor: '#1DB954',
-      borderColor: '#5A5A5A',
+      borderColor: 'transparent',
       borderRadius: '25px',
       fontFamily: 'Gotham Rounded, sans-serif',
       fontSize: '24px',
-      width: '500px', // Custom width
+      width: '100%', // use percentage width
+      maxWidth: '500px', // limit maximum width
       display: 'flex',
       justifyContent: 'center', // Center the text
       margin: '0 auto', // Center the dropdown menu on the page
@@ -33,7 +34,8 @@ export const customStyles = {
       backgroundColor: '#191414',
       overflow: 'hidden',
       position: 'relative',
-      width: '500px', // Custom width for options
+      width: '100%', // use percentage width
+      maxWidth: '500px', // limit maximum width
       margin: '0 auto', // Center the dropdown menu on the page
       textAlign: 'center',
     }),

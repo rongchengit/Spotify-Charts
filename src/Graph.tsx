@@ -6,6 +6,7 @@ import { fetchArtists, fetchPlaylistById } from "./spotifyUtils";
 import './Graph.css'; //importing graph css
 import buildGraph from "./bubbleGraph"; //importing everything from bubbleGraph
 
+
 interface IProps{
   playlistID:string;
   imageURL:string | undefined; //from Home.tsx html
@@ -66,7 +67,7 @@ export default class Graph extends React.Component<IProps, IState>{
                     }
                     else{
                       const images = artists.find(artist => artist.name === artistName)?.images; //find the correct artist from the track info
-                      let image = "https://media.istockphoto.com/id/1344687455/vector/question-sing-flat-icon-vector-illustration-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=ZU6kq0hQacI7mZoYuXTqXF8KsgNnbCRaxDm_nAIdCAw=" //if there isnt a image then default
+                      let image = "" //if there isnt a image then default
                       if(images?.length){ //if we find the artist we get the images
                         image = images[0].url // if there are images take the image
                       }
@@ -74,8 +75,8 @@ export default class Graph extends React.Component<IProps, IState>{
                     }
                   }) 
                 })
-                this.setState({data: data.sort((a,b) => a.count > b.count ? -1 : 1).slice(0, 100)})
-                buildGraph(data.sort((a,b) => a.count > b.count ? -1 : 1).slice(0, 100), this.props.imageURL!, "count" ) //slice is viewign top 50
+                this.setState({data: data.sort((a,b) => a.count > b.count ? -1 : 1).slice(0, window.innerWidth <= 768 ? 50 : 100 )})
+                buildGraph(data.sort((a,b) => a.count > b.count ? -1 : 1).slice(0, window.innerWidth <= 768 ? 50 : 100 ), this.props.imageURL!, "count" ) //slice is viewign top 50
             })
           }
           else{
@@ -85,13 +86,14 @@ export default class Graph extends React.Component<IProps, IState>{
     }
     //build the graph using this.buildGraph
   }
-    //render the svg and graph
+
+  //render the svg and graph
   render() {
     return (
       <div>
         <div className="center" id="bubbleChart"></div>
 
-        <div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           
           <button onClick={()=> buildGraph(this.state.data, this.props.imageURL!, "count")}>By Count</button>
 

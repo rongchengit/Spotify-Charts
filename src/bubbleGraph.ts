@@ -1,6 +1,7 @@
 import * as d3 from 'd3'; //importing everything from d3
 import { useRef } from 'react';
 import { TrackData } from './Graph';
+import backgroundPic from './squid.png'
 
 function normalizeRadius(value: number, minValue: number, maxValue: number, minRadius: number, maxRadius: number) {
   // Check if minValue and maxValue are equal
@@ -17,8 +18,14 @@ function normalizeRadius(value: number, minValue: number, maxValue: number, minR
   return radius;
 }
 
+let simulation: any;
 
 export default function buildGraph(data:TrackData[], backgroundImageURL: string, focus: string){
+
+function calculateRadius(d:any){
+  const radius = normalizeRadius((focus === "popularity" ? d.popularity : d.count),min,max,window.innerWidth < 600 ? 15 : 25,window.innerWidth < 600 ? 60 : 100);
+  return radius
+}  
 
 const totalCount = data.reduce((total, next) => total += next.count, 0)//grabbing the total count for playlist
 let max = data.reduce((max: number, value: any) => max > (focus === "popularity" ? value.popularity : value.count) ? max : (focus === "popularity" ? value.popularity : value.count), 1)
@@ -52,10 +59,10 @@ svg.append("defs")
   .append("image")
   .attr("x", 0)
   .attr("y", 0)
-  .attr("height", (d: any)=> normalizeRadius((focus === "popularity" ? d.popularity : d.count),min,max,window.innerWidth < 600 ? 15 : 25,window.innerWidth < 600 ? 60 : 100)*2)// position for the image
-  .attr("width", (d: any)=> normalizeRadius((focus === "popularity" ? d.popularity : d.count),min,max,window.innerWidth < 600 ? 15 : 25,window.innerWidth < 600 ? 60 : 100)*2)
+  .attr("height", (d: any)=> calculateRadius(d)*2)// position for the image
+  .attr("width", (d: any)=> calculateRadius(d)*2)
   .attr("preserveAspectRatio", "none")
-  .attr("xlink:href", (d:TrackData) => d.image);
+  .attr("xlink:href", (d:TrackData) => d.image === "" ? backgroundPic : d.image);
 
 // Initialize the circle: all located at the center of the svg area
 const node = svg.append("g")
@@ -63,7 +70,7 @@ const node = svg.append("g")
   .data(data)
   .enter()
   .append("circle")
-  .attr("r", (d: any)=> normalizeRadius((focus === "popularity" ? d.popularity : d.count),min,max,window.innerWidth < 600 ? 15 : 25,window.innerWidth < 600 ? 60 : 100))
+  .attr("r", (d: any)=> calculateRadius(d))
   .attr("cx", svg.node()!.clientWidth / 2)
   .attr("cy", svg.node()!.clientHeight / 2)
   .style("fill", (d:TrackData, i: number) => `url(#${i})`)
@@ -88,21 +95,24 @@ const tooltip = d3.select("#bubbleChart")
   .style("padding", "10px")
   .style("color", "#1DB954");
 
-//for background
 svg.insert("image", ":first-child")
-  .attr("href", backgroundImageURL)
+  .attr("href", backgroundImageURL === "" ? backgroundPic : backgroundImageURL) 
   .attr("width",  svg.node()!.clientWidth)
   .attr("height", svg.node()!.clientHeight)
   .attr("preserveAspectRatio","xMidYMid slice")
   .style("opacity",0.5)
   
-
 // Features of the forces applied to the nodes:
-const simulation = d3.forceSimulation()
-  .force("center", d3.forceCenter().x( svg.node()!.clientWidth / 2).y(svg.node()!.clientHeight / 2)) //set the center of gravity for the center of the gravity
-  .force("charge", d3.forceManyBody().strength(1)) // Nodes are attracted one each other of value is > 0
-  .force("collide", d3.forceCollide().strength(.5).radius((d: any)=> normalizeRadius((focus === "popularity" ? d.popularity : d.count),min,max,window.innerWidth < 600 ? 15 : 25,window.innerWidth < 600 ? 60 : 100)).iterations(1)) // Force that avoids circle overlapping
-  .force("attract", d3.forceRadial(0,  svg.node()!.clientWidth / 2, svg.node()!.clientHeight / 2).strength(0.05))//how strong the attraction it is to the center of the gravityt
+if(!simulation){
+  simulation = d3.forceSimulation()
+    .force("center", d3.forceCenter().x( svg.node()!.clientWidth / 2).y(svg.node()!.clientHeight / 2)) //set the center of gravity for the center of the gravity
+    .force("charge", d3.forceManyBody().strength(1)) // Nodes are attracted one each other of value is > 0
+    .force("collide", d3.forceCollide().strength(.5).radius((d: any)=> calculateRadius(d)).iterations(1)) // Force that avoids circle overlapping
+    .force("attract", d3.forceRadial(0,  svg.node()!.clientWidth / 2, svg.node()!.clientHeight / 2).strength(0.05))//how strong the attraction it is to the center of the gravityt
+}
+else{
+  simulation.force("collide", d3.forceCollide().strength(.5).radius((d: any)=> calculateRadius(d)).iterations(1)) // Force that avoids circle overlapping
+}
 
 // Apply these forces to the nodes and update their positions.
 // Once the force algorithm is happy with positions ('alpha' value is low enough), simulations will stop.
